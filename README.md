@@ -2,7 +2,6 @@
 
 This repository provides an automated workflow for batch processing focus stacking tasks using **Helicon Focus** software. It also includes scripts to parse metadata from folder structures and save it for downstream processing.
 
----
 
 ## Workflow Overview
 
@@ -27,35 +26,13 @@ This repository provides an automated workflow for batch processing focus stacki
 
 ## Repository Structure
 
-|-- generate_valid_folders.py # Validates folders and generates folders_to_process.txt |-- process_folders_master.bat # Master batch script orchestrating Python and .bat scripts |-- process_valid_folders.bat # Processes folders using Helicon Focus |-- postprocess_file_metadata.py # Parses metadata from processed folders |-- folders_to_process.txt # List of valid folders (generated) |-- parsed_metadata.csv # Final metadata in tabular format (output)
-
-
----
-
-## Workflow Overview
-
-1. **Folder Validation**:
-   - Python script identifies valid folders containing `.ARW` files.
-   - It excludes invalid folders (e.g., those with `CaptureOne` subdirectories).
-
-2. **Batch Processing**:
-   - A `.bat` script processes valid folders, generating `.dng` stacked images.
-   - Each `.dng` file is saved at the parent folder level with a robust name.
-
-3. **Metadata Extraction**:
-   - A second Python script extracts metadata from processed folders and saves it to a CSV file.
-   - Metadata includes:
-     - Collection object or photographer.
-     - Hash value (if available).
-     - Species name.
-     - View type (e.g., dorsal, lateral).
-     - Extra details (e.g., magnification).
-
----
-
-## Repository Structure
-
-|-- generate_valid_folders.py # Validates folders and generates folders_to_process.txt |-- process_folders_master.bat # Master batch script orchestrating Python and .bat scripts |-- process_valid_folders.bat # Processes folders using Helicon Focus |-- postprocess_file_metadata.py # Parses metadata from processed folders |-- folders_to_process.txt # List of valid folders (generated) |-- parsed_metadata.csv # Final metadata in tabular format (output)
+|-- \[INPUT_DIR]\*\*.ARW
+|-- generate_valid_folders.py # Validates folders and generates folders_to_process.txt 
+|-- process_folders_master.bat # Master batch script orchestrating Python and .bat scripts 
+|-- process_valid_folders.bat # Processes folders using Helicon Focus 
+|-- postprocess_file_metadata.py # Parses metadata from processed folders 
+|-- folders_to_process.txt # List of valid folders (generated) 
+|-- parsed_metadata.csv # Final metadata in tabular format (output)
 
 ---
 
