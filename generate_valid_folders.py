@@ -1,17 +1,22 @@
 import os
 import sys
 
+# Constants for folder exclusions
+EXCLUDED_FOLDERS = {"$Recycle.Bin", "System Volume Information", "CaptureOne"}
+
 def is_valid_folder(folder_path):
     """
     Check if a folder is valid for processing.
     A folder is valid if:
     - It contains at least 2 .ARW files.
     - It does not contain "label" in any .ARW file names.
-    - It is not a "CaptureOne" folder or subfolder.
+    - It is not in the excluded folders list.
     """
-    # Skip folders named "CaptureOne" or their subfolders
-    if "CaptureOne" in folder_path:
-        print(f"Skipping folder: {folder_path} (CaptureOne detected)")
+    folder_name = os.path.basename(folder_path)
+
+    # Skip excluded folders
+    if folder_name in EXCLUDED_FOLDERS:
+        print(f"Skipping folder: {folder_path} (Excluded folder)")
         return False
 
     # Get all .ARW files in the folder
@@ -28,6 +33,7 @@ def is_valid_folder(folder_path):
         return False
 
     return True
+
 
 def generate_valid_folders(input_dir):
     """
@@ -49,6 +55,7 @@ def generate_valid_folders(input_dir):
             f.write(folder + '\n')
 
     print(f"Valid folders saved to {output_file}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
