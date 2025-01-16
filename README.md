@@ -26,13 +26,13 @@ This repository provides an automated workflow for batch processing focus stacki
 
 ## Repository Structure
 ```
-|-- \[INPUT_DIR]\[Folder_With_ARW]\*.ARW
+|-- *\[INPUT_DIR]\[Folder_With_ARW]\*.ARW
 |-- generate_valid_folders.py # Validates folders and generates folders_to_process.txt 
 |-- process_folders_master.bat # Master batch script orchestrating Python and .bat scripts 
 |-- process_valid_folders.bat # Processes folders using Helicon Focus 
-|-- postprocess_file_metadata.py # Parses metadata from processed folders 
-|-- folders_to_process.txt # List of valid folders (generated) 
-|-- parsed_metadata.csv # Final metadata in tabular format (output)
+|-- postprocess_file_metadata.py # Parses metadata from processed folders (Unfinished)
+|-- *\[INPUT_DIR]\folders_to_process.txt # List of valid folders (generated) 
+|-- *\[INPUT_DIR]\parsed_metadata.csv # Final metadata in tabular format (output)
 
 ---
 ```
