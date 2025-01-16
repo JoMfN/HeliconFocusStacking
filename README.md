@@ -25,8 +25,8 @@ This repository provides an automated workflow for batch processing focus stacki
 ---
 
 ## Repository Structure
-
-|-- \[INPUT_DIR]\*\*.ARW
+```
+|-- \[INPUT_DIR]\[Folder_With_ARW]\*.ARW
 |-- generate_valid_folders.py # Validates folders and generates folders_to_process.txt 
 |-- process_folders_master.bat # Master batch script orchestrating Python and .bat scripts 
 |-- process_valid_folders.bat # Processes folders using Helicon Focus 
@@ -35,6 +35,7 @@ This repository provides an automated workflow for batch processing focus stacki
 |-- parsed_metadata.csv # Final metadata in tabular format (output)
 
 ---
+```
 
 ## Usage
 
@@ -51,8 +52,9 @@ HF_EXE="C:\Program Files\Helicon Software\Helicon Focus 8\HeliconFocus.exe"     
 %HF_EXE% --activationCode %LICENSE_KEY% --register-global
 ```
 
+### Step 2: generate valid folders to batch process them for Focus stacking within the .ARW images in those folders.
 
-Step 2: generate valid folders to batch process them for Focus stacking within the .ARW images in those folders.
+#### Step 2.1: generate valid folders
 
 Run the following command to generate a `folders_to_process.txt` file within the [INPUT_DIR] :
 
@@ -61,9 +63,68 @@ process_folders_master.bat -d [INPUT_DIR]
 ```
 [INPUT_DIR]: Root directory containing subfolders with .ARW files.
 
+### **Example Directory Structure**
+
+#### **Before Running the Script**
+
+```
+C:\path_to_images
+├── Folder1
+│   ├── file1.ARW
+│   ├── file2_label.ARW
+├── Folder2
+│   ├── file3.ARW
+│   ├── file4.ARW
+│   └── SubFolder1
+│       ├── file5.ARW
+│       └── file6.ARW
+├── CaptureOne
+│   ├── file7.ARW
+│   └── file8.ARW
+```
+
+#### **After Running the Script**
+**Content of `folders_to_process.txt`:**
+```
+C:\path_to_images\Folder2
+C:\path_to_images\Folder2\SubFolder1
+```
+
+#### Step 2.2: to batch process them for Focus stacking within the .ARW images in those folders.
+
 Helicon Focus processes the folders listed in folders_to_process.txt. Output .dng files are saved in the parent folder.
 
-Step 3: Extract Metadata (Unfinished)
+### **Example Directory Structure**
+
+**Before Processing**:
+```
+C:\path_to_images
+├── Folder1
+│   ├── Image1.ARW
+│   ├── Image2.ARW
+│   └── Image3.ARW
+├── Folder2
+│   ├── Image1.ARW
+│   └── Image2.ARW
+├── folders_to_process.txt
+```
+
+**After Processing**:
+```
+C:\path_to_images
+├── Folder1
+│   ├── Image1.ARW
+│   ├── Image2.ARW
+│   ├── Image3.ARW
+│   └── Folder1.dng
+├── Folder2
+│   ├── Image1.ARW
+│   ├── Image2.ARW
+│   └── Folder2.dng
+├── folders_to_process.txt
+```
+
+### Step 3: Extract Metadata (Unfinished)
 Run the postprocess_file_metadata.py script to parse folder metadata:
 
 ```bash
