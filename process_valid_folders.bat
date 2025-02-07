@@ -7,8 +7,14 @@ SET HF_EXE="C:\Program Files\Helicon Software\Helicon Focus 8\HeliconFocus.exe"
 :: Locate folders_to_process.txt in the input directory
 SET FOLDERS_FILE=%~1\folders_to_process.txt
 
+:: Ensure the folders_to_process.txt exists
+IF NOT EXIST "%FOLDERS_FILE%" (
+    ECHO Error: %FOLDERS_FILE% not found.
+    EXIT /B 1
+)
+
 :: Loop through each folder in the list
-FOR /F "delims=" %%G IN (%FOLDERS_FILE%) DO (
+FOR /F "usebackq delims=" %%G IN ("%FOLDERS_FILE%") DO (
     ECHO Processing folder: %%G
 
     :: Define the parent directory
