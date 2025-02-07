@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 :: Define paths
 SET SCRIPT_DIR=%~dp0
-SET PYTHON_SCRIPT="%SCRIPT_DIR%generate_valid_folders.py"
+SET PYTHON_SCRIPT_GENERATE_FOLDERS="%SCRIPT_DIR%generate_valid_folders.py"
 SET PYTHON_SCRIPT_GENERATE_METADATA="%SCRIPT_DIR%Generate_Metadata.py"
 SET PROCESS_BATCH="%SCRIPT_DIR%process_valid_folders.bat"
 
