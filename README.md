@@ -59,9 +59,10 @@ HF_EXE="C:\Program Files\Helicon Software\Helicon Focus 8\HeliconFocus.exe"     
 Run the following command to generate a `folders_to_process.txt` file within the [INPUT_DIR] :
 
 ```powershell
-process_folders_master.bat -d [INPUT_DIR]
+process_folders_master.bat -d [INPUT_DIR] -t [all|keep]
 ```
 [INPUT_DIR]: Root directory containing subfolders with .ARW files.
+[all|keep]: a flagg to determine if all valid folders need to be stacked or just the ones without a `.dng` stacked image in their parent folder (default is `all`)
 
 ### **Example Directory Structure**
 
