@@ -3,65 +3,99 @@ import re
 import sys
 import pandas as pd
 
-# Define regex patterns for folder structures
-patterns = [
-    r".*?(?P<ObjectCollector>[a-zA-Z0-9_-]+).*?(?P<Hash>[a-z0-9]+)__(?P<SpeciesName>[a-zA-Z_]+)__(?P<ViewType>[a-zA-Z_]+)(?:_.*)?",
-    r".*?(?P<Hash>[a-z0-9]+)__(?P<SpeciesName>[a-zA-Z_]+)__(?P<ViewType>[a-zA-Z_]+)(?:_.*)?",
-]
-
-# Excluded folders that should not be processed
+# Define excluded folders that should not be processed
 EXCLUDED_FOLDERS = {"CaptureOne", "Cache", "Proxies", "Settings140", "Thumbnails"}
+
+# Improved regex pattern to dynamically extract metadata from folder names
+PATTERN = re.compile(r"([a-zA-Z0-9_-]+)")
 
 def format_folder_path(input_dir, folder_path):
     """
-    Format the folder path by removing the input directory prefix and replacing backslashes with '__'.
+    Formats the folder path by:
+    - Removing the input directory prefix
+    - Replacing backslashes with '__'
+    - Removing known excluded folders
     """
     relative_path = os.path.relpath(folder_path, input_dir)
     formatted_path = relative_path.replace("\\", "__")
+
+    # Exclude folders in the EXCLUDED_FOLDERS list
+    for excluded in EXCLUDED_FOLDERS:
+        if f"__{excluded}__" in formatted_path or formatted_path.endswith(f"__{excluded}"):
+            return None  # Skip processing
+
     return formatted_path
 
-def parse_folder(folder_name, patterns):
+def parse_folder(folder_name):
     """
-    Parse metadata from a folder name using defined regex patterns.
+    Extracts metadata dynamically from formatted folder paths.
     """
-    for pattern in patterns:
-        match = re.search(pattern, folder_name)
+    metadata = {
+        "ObjectCollector": "Unknown",
+        "Hash": "No Hash",
+        "SpeciesName": "Unknown",
+        "ViewType": "Unknown",
+        "ExtraInfo": ""
+    }
+
+    # Split folder name into meaningful segments
+    parts = folder_name.split("__")
+    extracted_values = []
+
+    for part in parts:
+        match = PATTERN.fullmatch(part)
         if match:
-            metadata = match.groupdict()
-            metadata.setdefault("ObjectCollector", "Unknown")
-            metadata["FolderPath"] = folder_name
-            return metadata
-    return None
+            extracted_values.append(match.group(1))
+
+    # Assign metadata dynamically based on extracted values
+    if len(extracted_values) >= 4:
+        metadata["ObjectCollector"] = extracted_values[0]
+        metadata["Hash"] = extracted_values[1]
+        metadata["SpeciesName"] = extracted_values[2]
+        metadata["ViewType"] = extracted_values[3]
+        if len(extracted_values) > 4:
+            metadata["ExtraInfo"] = "__".join(extracted_values[4:])
+    elif len(extracted_values) == 3:
+        metadata["ObjectCollector"] = "Unknown"
+        metadata["Hash"] = extracted_values[0]
+        metadata["SpeciesName"] = extracted_values[1]
+        metadata["ViewType"] = extracted_values[2]
+    elif len(extracted_values) == 2:
+        metadata["ObjectCollector"] = "Unknown"
+        metadata["Hash"] = "No Hash"
+        metadata["SpeciesName"] = extracted_values[0]
+        metadata["ViewType"] = extracted_values[1]
+
+    return metadata
 
 def generate_metadata(input_dir):
     """
-    Generate metadata for all valid folders under the input directory.
+    Generates metadata from all valid folders listed in `folders_to_process.txt`.
     """
+    folders_file = os.path.join(input_dir, "folders_to_process.txt")
+
+    if not os.path.exists(folders_file):
+        print(f"Error: {folders_file} not found.")
+        return
+
+    with open(folders_file, 'r') as f:
+        folder_paths = [line.strip() for line in f]
+
     parsed_data = []
-    
-    for root, dirs, _ in os.walk(input_dir):
-        # Filter out excluded folders
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_FOLDERS]
-        
-        for dir_name in dirs:
-            full_path = os.path.join(root, dir_name)
-            formatted_folder = format_folder_path(input_dir, full_path)
-            metadata = parse_folder(formatted_folder, patterns)
-            
-            if metadata:
-                metadata["FormattedFolderPath"] = formatted_folder
-                parsed_data.append(metadata)
-    
+    for folder in folder_paths:
+        formatted_path = format_folder_path(input_dir, folder)
+        if formatted_path:
+            metadata = parse_folder(formatted_path)
+            metadata["FormattedFolderPath"] = formatted_path
+            parsed_data.append(metadata)
+
     # Convert to DataFrame
     folders_df = pd.DataFrame(parsed_data)
-    
-    if not folders_df.empty:
-        # Save metadata to CSV
-        output_csv = os.path.join(input_dir, "parsed_folders_metadata.csv")
-        folders_df.to_csv(output_csv, index=False)
-        print(f"Metadata saved to {output_csv}")
-    else:
-        print("No valid metadata found.")
+
+    # Save metadata to CSV
+    output_csv = os.path.join(input_dir, "parsed_folders_metadata.csv")
+    folders_df.to_csv(output_csv, index=False)
+    print(f"Metadata saved to {output_csv}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
